@@ -1,0 +1,33 @@
+#!/bin/bash
+# <UDF name="user_name" label="Unprivileged user account name that will have access to sudo command" example="This is the account that you will be using to log in." />
+# <UDF name="user_password" label="Unprivileged user password"/>
+# <UDF name="user_sshkey" default="" label="Public Key for User" example="Recommended method of authentication. It is more secure than password log in." />
+# <UDF name="user_shell" label="Shell" oneof="/bin/zsh,/bin/bash" default="/bin/bash" />
+# <UDF name="sshd_passwordauth" label="Use SSH password authentication" oneof="Yes,No" default="No" example="Turn off password authentication if you have added a Public Key." />
+# <UDF name="sshd_permitrootlogin" label="Permit SSH root login" oneof="No,Yes" default="No" example="Root account should not be exposed." />
+#
+# <UDF name="host_name" label="Hostname" default="mylinodehost" example="mylinodehost or a more unique name" />
+#
+IFSOLD=@IFS
+
+APP_DIR=/root/Complete_web_and_mail_server
+mkdir $APP_DIR
+
+wget --no-check-certificate https://api.github.com/repos/debianshellscripts/Complete-web-and-mail-server/tarball/master
+
+tar xpvf master -C $APP_DIR --strip-components=1
+IFS=""
+i=1
+CONFIG_TO_FILE[i++]=$(printf 'USER_NAME="%s"' $USER_NAME)
+CONFIG_TO_FILE[i++]=$(printf 'USER_PASSWORD="%s"' $USER_PASSWORD)
+CONFIG_TO_FILE[i++]=$(printf 'USER_SHELL="%s"' $USER_SHELL)
+CONFIG_TO_FILE[i++]=$(printf 'USER_SSHKEY="%s"' $USER_SSHKEY)
+CONFIG_TO_FILE[i++]=$(printf 'SSHD_PERMITROOTLOGIN="%s"' $SSHD_PERMITROOTLOGIN)
+CONFIG_TO_FILE[i++]=$(printf 'SSHD_PASSWORDAUTH="%s"' $SSHD_PASSWORDAUTH)
+CONFIG_TO_FILE[i++]=$(printf 'HOST_NAME="%s"' $HOST_NAME)
+
+printf "%s\n" "${CONFIG_TO_FILE[@]}" >"${APP_DIR}/config.sh"
+
+IFS=$IFSOLD
+
+. $APP_DIR/setup.sh
