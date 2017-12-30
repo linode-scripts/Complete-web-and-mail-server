@@ -7,6 +7,7 @@
 # <UDF name="sshd_permitrootlogin" label="Permit SSH root login" oneof="No,Yes" default="No" example="Root account should not be exposed." />
 #
 # <UDF name="host_name" label="Hostname" default="mylinodehost" example="mylinodehost or a more unique name" />
+# <UDF name="autoexec" label="Automatic execute script" oneof="Yes,No" default="Yes" example="Otherwise manuel exercute script at first login" />
 #
 IFSOLD=@IFS
 
@@ -16,7 +17,7 @@ mkdir $APP_DIR
 wget --no-check-certificate https://api.github.com/repos/debianshellscripts/Complete-web-and-mail-server/tarball/master
 
 tar xpvf master -C $APP_DIR --strip-components=1
-IFS=""
+IFS=$'\n\t'
 i=1
 CONFIG_TO_FILE[i++]=$(printf 'USER_NAME="%s"' $USER_NAME)
 CONFIG_TO_FILE[i++]=$(printf 'USER_PASSWORD="%s"' $USER_PASSWORD)
@@ -30,4 +31,7 @@ printf "%s\n" "${CONFIG_TO_FILE[@]}" >"${APP_DIR}/config.sh"
 
 IFS=$IFSOLD
 
-. $APP_DIR/setup.sh
+if [ $AUTOEXEC = "Yes" ]; then 
+	. $APP_DIR/setup.sh
+fi
+
