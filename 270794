@@ -12,26 +12,25 @@
 IFSOLD=@IFS
 
 APP_DIR=/root/Complete_web_and_mail_server
-mkdir $APP_DIR
 
-wget --no-check-certificate https://api.github.com/repos/debianshellscripts/Complete-web-and-mail-server/tarball/master
-
-tar xpvf master -C $APP_DIR --strip-components=1
-IFS=$'\n\t'
-i=1
-CONFIG_TO_FILE[i++]=$(printf 'USER_NAME="%s"' $USER_NAME)
-CONFIG_TO_FILE[i++]=$(printf 'USER_PASSWORD="%s"' $USER_PASSWORD)
-CONFIG_TO_FILE[i++]=$(printf 'USER_SHELL="%s"' $USER_SHELL)
-CONFIG_TO_FILE[i++]=$(printf 'USER_SSHKEY="%s"' $USER_SSHKEY)
-CONFIG_TO_FILE[i++]=$(printf 'SSHD_PERMITROOTLOGIN="%s"' $SSHD_PERMITROOTLOGIN)
-CONFIG_TO_FILE[i++]=$(printf 'SSHD_PASSWORDAUTH="%s"' $SSHD_PASSWORDAUTH)
-CONFIG_TO_FILE[i++]=$(printf 'HOST_NAME="%s"' $HOST_NAME)
-
-printf "%s\n" "${CONFIG_TO_FILE[@]}" >"${APP_DIR}/config.sh"
-
-IFS=$IFSOLD
-
-if [ $AUTOEXEC = "Yes" ]; then 
+# if first time run!
+if [ ! -d "$DIRECTORY" ]; then
+	mkdir $APP_DIR
+	wget --no-check-certificate https://api.github.com/repos/debianshellscripts/Complete-web-and-mail-server/tarball/master
+	tar xpvf master -C $APP_DIR --strip-components=1
+	IFS=$'\n\t'
+	CONFIG_TO_FILE[i++]=$(printf 'USER_NAME="%s"' $USER_NAME)
+	CONFIG_TO_FILE[i++]=$(printf 'USER_PASSWORD="%s"' $USER_PASSWORD)
+	CONFIG_TO_FILE[i++]=$(printf 'USER_SHELL="%s"' $USER_SHELL)
+	CONFIG_TO_FILE[i++]=$(printf 'USER_SSHKEY="%s"' $USER_SSHKEY)
+	CONFIG_TO_FILE[i++]=$(printf 'SSHD_PERMITROOTLOGIN="%s"' $SSHD_PERMITROOTLOGIN)
+	CONFIG_TO_FILE[i++]=$(printf 'SSHD_PASSWORDAUTH="%s"' $SSHD_PASSWORDAUTH)
+	CONFIG_TO_FILE[i++]=$(printf 'HOST_NAME="%s"' $HOST_NAME)
+	printf "%s\n" "${CONFIG_TO_FILE[@]}" >"${APP_DIR}/config.sh"
+	IFS=$IFSOLD
+	if [ $AUTOEXEC = "Yes" ]; then 
+		. $APP_DIR/setup.sh
+	fi
+else
 	. $APP_DIR/setup.sh
 fi
-
