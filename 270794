@@ -14,7 +14,7 @@ IFSOLD=@IFS
 APP_DIR=/root/Complete_web_and_mail_server
 
 # if first time run!
-if [ ! -d "$DIRECTORY" ]; then
+if [ ! -d "$APP_DIR" ]; then
 	mkdir $APP_DIR
 	wget --no-check-certificate https://api.github.com/repos/debianshellscripts/Complete-web-and-mail-server/tarball/master
 	tar xpvf master -C $APP_DIR --strip-components=1
